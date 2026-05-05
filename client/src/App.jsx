@@ -1,0 +1,63 @@
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
+
+import Home from './pages/Home';
+import About from './pages/About';
+import Methodology from './pages/Methodology';
+import Contact from './pages/Contact';
+import Courses from './pages/Courses';
+import CourseDetail from './pages/CourseDetail';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import NotFound from './pages/NotFound';
+
+import AdminDashboard from './pages/admin/AdminDashboard';
+import ManageCourses from './pages/admin/ManageCourses';
+import ManageUsers from './pages/admin/ManageUsers';
+import ManageLeads from './pages/admin/ManageLeads';
+
+function App() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/methodology" element={<Methodology />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:slug" element={<CourseDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          <Route path="/dashboard" element={
+            <ProtectedRoute><Dashboard /></ProtectedRoute>
+          } />
+
+          <Route path="/admin" element={
+            <AdminRoute><AdminDashboard /></AdminRoute>
+          } />
+          <Route path="/admin/courses" element={
+            <AdminRoute><ManageCourses /></AdminRoute>
+          } />
+          <Route path="/admin/users" element={
+            <AdminRoute><ManageUsers /></AdminRoute>
+          } />
+          <Route path="/admin/leads" element={
+            <AdminRoute><ManageLeads /></AdminRoute>
+          } />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
