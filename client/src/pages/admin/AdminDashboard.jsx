@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, BookOpen, Inbox, IndianRupee, BadgeCheck, ArrowRight } from 'lucide-react';
+import { Users, BookOpen, IndianRupee, BadgeCheck, ArrowRight, Clock } from 'lucide-react';
 import api from '../../api/axios';
 
 const AdminDashboard = () => {
@@ -26,19 +26,34 @@ const AdminDashboard = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Quick stats */}
+        {/* Stats */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <StatCard icon={<Users/>} label="Users" value={stats?.users || 0} link="/admin/users"/>
-          <StatCard icon={<BookOpen/>} label="Courses" value={stats?.courses || 0} link="/admin/courses"/>
-          <StatCard icon={<Inbox/>} label="Leads" value={stats?.leads || 0} sub={`${stats?.newLeads || 0} new`} link="/admin/leads"/>
-          <StatCard icon={<IndianRupee/>} label="Revenue" value={`₹${(stats?.revenue || 0).toLocaleString('en-IN')}`}/>
+          <StatCard icon={<Users/>}       label="Users"              value={stats?.users || 0}             link="/admin/users"/>
+          <StatCard icon={<BookOpen/>}    label="Courses"            value={stats?.courses || 0}           link="/admin/courses"/>
+          <StatCard icon={<Clock/>}       label="Pending Approvals"  value={stats?.pendingEnrollments || 0} link="/admin/enrollments" highlight={stats?.pendingEnrollments > 0}/>
+          <StatCard icon={<IndianRupee/>} label="Revenue Collected"  value={`₹${(stats?.revenue || 0).toLocaleString('en-IN')}`}/>
         </div>
 
+        {/* Pending approval alert */}
+        {stats?.pendingEnrollments > 0 && (
+          <Link to="/admin/enrollments?status=pending" className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-8 hover:bg-yellow-100 transition-colors">
+            <div className="flex items-center gap-3">
+              <Clock className="text-yellow-600" size={20}/>
+              <div>
+                <p className="font-medium text-yellow-800">{stats.pendingEnrollments} enrollment{stats.pendingEnrollments > 1 ? 's' : ''} waiting for your approval</p>
+                <p className="text-xs text-yellow-700">Click to review and approve</p>
+              </div>
+            </div>
+            <ArrowRight className="text-yellow-600" size={18}/>
+          </Link>
+        )}
+
         {/* Quick actions */}
-        <div className="grid md:grid-cols-3 gap-4 mb-10">
-          <ActionCard title="Manage Courses" desc="Add, edit, publish programs" to="/admin/courses"/>
-          <ActionCard title="Manage Users" desc="View and control user accounts" to="/admin/users"/>
-          <ActionCard title="View Leads" desc="Track funnel and conversions" to="/admin/leads"/>
+        <div className="grid md:grid-cols-4 gap-4 mb-10">
+          <ActionCard title="Manage Enrollments" desc="Approve, reject, mark payments" to="/admin/enrollments"/>
+          <ActionCard title="Manage Courses"     desc="Add, edit, publish programs"    to="/admin/courses"/>
+          <ActionCard title="Manage Users"       desc="View and control accounts"      to="/admin/users"/>
+          <ActionCard title="View Leads"         desc="Track funnel and conversions"   to="/admin/leads"/>
         </div>
 
         {/* Recent enrollments */}
@@ -46,12 +61,11 @@ const AdminDashboard = () => {
           <h2 className="font-display text-xl text-navy mb-4 flex items-center gap-2">
             <BadgeCheck className="text-gold"/> Recent Enrollments
           </h2>
-
-          {stats?.recentEnrollments?.length === 0 ? (
+          {!stats?.recentEnrollments?.length ? (
             <p className="text-ink/60 text-sm">No enrollments yet.</p>
           ) : (
             <div className="space-y-3">
-              {stats?.recentEnrollments?.map(e => (
+              {stats.recentEnrollments.map(e => (
                 <div key={e._id} className="flex items-center justify-between py-3 border-b border-navy-100 last:border-0">
                   <div>
                     <div className="font-medium text-navy">{e.user?.name || 'Unknown'}</div>
@@ -59,27 +73,37 @@ const AdminDashboard = () => {
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-navy">{e.course?.title}</div>
-                    <div className="text-xs text-gold-dark">₹{e.amountPaid.toLocaleString('en-IN')}</div>
+                    <div className="flex items-center gap-2 justify-end mt-1">
+                      <span className={`badge text-[10px] ${
+                        e.enrollmentStatus === 'active'   ? 'bg-green-100 text-green-800' :
+                        e.enrollmentStatus === 'rejected' ? 'bg-red-100 text-red-700' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>{e.enrollmentStatus}</span>
+                      <span className="text-xs text-gold-dark">₹{e.amountPaid.toLocaleString('en-IN')}</span>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
+          <Link to="/admin/enrollments" className="mt-4 inline-block text-sm text-gold-dark hover:underline">
+            View all enrollments →
+          </Link>
         </div>
       </div>
     </div>
   );
 };
 
-const StatCard = ({ icon, label, value, sub, link }) => {
+const StatCard = ({ icon, label, value, sub, link, highlight }) => {
   const content = (
-    <div className="card p-5 h-full">
+    <div className={`card p-5 h-full ${highlight ? 'border-yellow-300 bg-yellow-50' : ''}`}>
       <div className="flex items-start justify-between mb-2">
-        <div className="w-10 h-10 bg-navy text-gold rounded-lg flex items-center justify-center">{icon}</div>
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${highlight ? 'bg-yellow-200 text-yellow-800' : 'bg-navy text-gold'}`}>{icon}</div>
         {link && <ArrowRight className="text-ink/30" size={16}/>}
       </div>
       <div className="text-xs uppercase tracking-widest text-ink/60 mt-3">{label}</div>
-      <div className="font-display text-2xl text-navy">{value}</div>
+      <div className={`font-display text-2xl ${highlight ? 'text-yellow-800' : 'text-navy'}`}>{value}</div>
       {sub && <div className="text-xs text-gold-dark mt-1">{sub}</div>}
     </div>
   );

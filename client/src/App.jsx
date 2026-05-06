@@ -19,6 +19,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageCourses from './pages/admin/ManageCourses';
 import ManageUsers from './pages/admin/ManageUsers';
 import ManageLeads from './pages/admin/ManageLeads';
+import ManageEnrollments from './pages/admin/ManageEnrollments';
 
 function App() {
   return (
@@ -50,6 +51,9 @@ function App() {
           } />
           <Route path="/admin/leads" element={
             <AdminRoute><ManageLeads /></AdminRoute>
+          } />
+          <Route path="/admin/enrollments" element={
+            <AdminRoute><ManageEnrollments /></AdminRoute>
           } />
 
           <Route path="*" element={<NotFound />} />

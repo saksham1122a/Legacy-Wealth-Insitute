@@ -1,8 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Calendar, TrendingUp, Award } from 'lucide-react';
+import { BookOpen, Calendar, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+
+const statusConfig = {
+  active:   { label: 'Active',            cls: 'bg-green-100 text-green-800',  icon: <CheckCircle size={12}/> },
+  pending:  { label: 'Pending Approval',  cls: 'bg-yellow-100 text-yellow-800', icon: <Clock size={12}/> },
+  rejected: { label: 'Rejected',          cls: 'bg-red-100 text-red-800',      icon: <XCircle size={12}/> }
+};
+
+const paymentConfig = {
+  paid:    { label: 'Paid',            cls: 'bg-green-100 text-green-800' },
+  pending: { label: 'Payment Pending', cls: 'bg-yellow-100 text-yellow-800' },
+  failed:  { label: 'Payment Failed',  cls: 'bg-red-100 text-red-800' }
+};
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -16,13 +28,11 @@ const Dashboard = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const totalSpent = enrollments
-    .filter(e => e.paymentStatus === 'success')
-    .reduce((sum, e) => sum + e.amountPaid, 0);
-
-  const avgProgress = enrollments.length
-    ? Math.round(enrollments.reduce((s, e) => s + e.progressPercent, 0) / enrollments.length)
-    : 0;
+  const active   = enrollments.filter(e => e.enrollmentStatus === 'active');
+  const pending  = enrollments.filter(e => e.enrollmentStatus === 'pending');
+  const totalInvested = enrollments
+    .filter(e => e.paymentStatus === 'paid')
+    .reduce((s, e) => s + e.amountPaid, 0);
 
   return (
     <div className="bg-cream min-h-screen">
@@ -38,12 +48,26 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Stats */}
         <div className="grid sm:grid-cols-3 gap-4 mb-10">
-          <StatCard icon={<BookOpen/>} label="Enrolled Programs" value={enrollments.length}/>
-          <StatCard icon={<TrendingUp/>} label="Average Progress" value={`${avgProgress}%`}/>
-          <StatCard icon={<Award/>} label="Total Invested" value={`₹${totalSpent.toLocaleString('en-IN')}`}/>
+          <StatCard icon={<BookOpen/>} label="Active Programs"  value={active.length} />
+          <StatCard icon={<Clock/>}    label="Pending Approval" value={pending.length} />
+          <StatCard icon={<TrendingUp/>} label="Total Invested" value={`₹${totalInvested.toLocaleString('en-IN')}`} />
         </div>
 
-        {/* My Courses */}
+        {/* Pending notice */}
+        {pending.length > 0 && (
+          <div className="flex items-start gap-3 bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+            <AlertCircle className="text-yellow-600 flex-shrink-0 mt-0.5" size={18}/>
+            <div>
+              <p className="text-sm font-medium text-yellow-800">
+                {pending.length} enrollment{pending.length > 1 ? 's' : ''} awaiting admin approval
+              </p>
+              <p className="text-xs text-yellow-700 mt-0.5">
+                Make your offline payment and contact us — we'll activate your access within 24 hours.
+              </p>
+            </div>
+          </div>
+        )}
+
         <h2 className="font-display text-2xl text-navy mb-5">My Programs</h2>
 
         {loading ? (
@@ -57,9 +81,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-5">
-            {enrollments.map(e => (
-              <EnrollmentCard key={e._id} enrollment={e}/>
-            ))}
+            {enrollments.map(e => <EnrollmentCard key={e._id} enrollment={e}/>)}
           </div>
         )}
       </div>
@@ -81,44 +103,57 @@ const EnrollmentCard = ({ enrollment }) => {
   const course = enrollment.course;
   if (!course) return null;
 
+  const es = statusConfig[enrollment.enrollmentStatus] || statusConfig.pending;
+  const ps = paymentConfig[enrollment.paymentStatus] || paymentConfig.pending;
+  const isActive = enrollment.enrollmentStatus === 'active';
+
   return (
-    <Link to={`/courses/${course.slug}`} className="card p-6 group">
-      <div className="flex justify-between items-start mb-3">
+    <div className={`card p-6 ${!isActive ? 'opacity-90' : ''}`}>
+      <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
         <span className="badge bg-navy-50 text-navy">{course.category}</span>
-        <span className={`badge ${
-          enrollment.paymentStatus === 'success'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-yellow-100 text-yellow-800'
-        }`}>
-          {enrollment.paymentStatus}
-        </span>
-      </div>
-
-      <h3 className="font-display text-xl text-navy mb-3 group-hover:text-gold-dark transition-colors">
-        {course.title}
-      </h3>
-
-      <div className="mb-4">
-        <div className="flex justify-between text-xs text-ink/60 mb-1.5">
-          <span>Progress</span>
-          <span>{enrollment.progressPercent}%</span>
-        </div>
-        <div className="w-full bg-navy-100 rounded-full h-2">
-          <div
-            className="bg-gold h-2 rounded-full transition-all duration-500"
-            style={{ width: `${enrollment.progressPercent}%` }}
-          />
+        <div className="flex gap-2">
+          <span className={`badge flex items-center gap-1 ${es.cls}`}>{es.icon}{es.label}</span>
+          <span className={`badge ${ps.cls}`}>{ps.label}</span>
         </div>
       </div>
 
-      <div className="flex justify-between text-xs text-ink/60 pt-3 border-t border-navy-100">
+      <h3 className="font-display text-xl text-navy mb-3">{course.title}</h3>
+
+      {isActive ? (
+        <>
+          <div className="mb-4">
+            <div className="flex justify-between text-xs text-ink/60 mb-1.5">
+              <span>Progress</span>
+              <span>{enrollment.progressPercent}%</span>
+            </div>
+            <div className="w-full bg-navy-100 rounded-full h-2">
+              <div
+                className="bg-gold h-2 rounded-full transition-all duration-500"
+                style={{ width: `${enrollment.progressPercent}%` }}
+              />
+            </div>
+          </div>
+          <Link to={`/courses/${course.slug}`} className="btn-gold w-full !py-2.5 text-sm">
+            Continue Learning →
+          </Link>
+        </>
+      ) : enrollment.enrollmentStatus === 'rejected' ? (
+        <div className="text-sm text-red-700 bg-red-50 rounded-lg p-3">
+          Your enrollment was not approved. Please contact us for more information.
+        </div>
+      ) : (
+        <div className="text-sm text-yellow-800 bg-yellow-50 rounded-lg p-3">
+          Your enrollment is pending admin approval. Please complete your offline payment if not done yet.
+        </div>
+      )}
+
+      <div className="flex justify-between text-xs text-ink/60 pt-3 mt-3 border-t border-navy-100">
         <span className="flex items-center gap-1">
-          <Calendar size={12}/>
-          Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString('en-IN')}
+          <Calendar size={12}/> Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString('en-IN')}
         </span>
         <span>₹{enrollment.amountPaid.toLocaleString('en-IN')}</span>
       </div>
-    </Link>
+    </div>
   );
 };
 
