@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
 const Course = require('../models/Course');
 const Enrollment = require('../models/Enrollment');
+const Lesson = require('../models/Lesson');
 const Lead = require('../models/Lead');
 const { protect } = require('../middleware/auth');
 const { admin } = require('../middleware/admin');
@@ -10,7 +11,7 @@ const { admin } = require('../middleware/admin');
 const router = express.Router();
 router.use(protect, admin);
 
-// GET /api/admin/stats
+// ─── STATS ────────────────────────────────────────────────────────────────────
 router.get('/stats', asyncHandler(async (req, res) => {
   const [users, courses, leads, totalEnrollments, pendingEnrollments, activeEnrollments] = await Promise.all([
     User.countDocuments({ role: 'user' }),
@@ -34,13 +35,10 @@ router.get('/stats', asyncHandler(async (req, res) => {
   const revenue = revenueAgg[0]?.total || 0;
   const newLeads = await Lead.countDocuments({ status: 'new' });
 
-  res.json({
-    success: true,
-    stats: { users, courses, leads, newLeads, revenue, totalEnrollments, pendingEnrollments, activeEnrollments, recentEnrollments }
-  });
+  res.json({ success: true, stats: { users, courses, leads, newLeads, revenue, totalEnrollments, pendingEnrollments, activeEnrollments, recentEnrollments } });
 }));
 
-// GET /api/admin/enrollments
+// ─── ENROLLMENTS ──────────────────────────────────────────────────────────────
 router.get('/enrollments', asyncHandler(async (req, res) => {
   const { status, search } = req.query;
   const filter = {};
@@ -60,54 +58,79 @@ router.get('/enrollments', asyncHandler(async (req, res) => {
       e.course?.title?.toLowerCase().includes(q)
     );
   }
-
   res.json({ success: true, count: enrollments.length, enrollments });
 }));
 
-// PATCH /api/admin/enrollments/:id/approve
 router.patch('/enrollments/:id/approve', asyncHandler(async (req, res) => {
-  const enrollment = await Enrollment.findById(req.params.id);
-  if (!enrollment) { res.status(404); throw new Error('Enrollment not found'); }
-
-  enrollment.enrollmentStatus = 'active';
-  enrollment.approvedBy = req.user._id;
-  enrollment.approvedAt = new Date();
-  if (req.body.notes) enrollment.adminNotes = req.body.notes;
-  await enrollment.save();
-
-  res.json({ success: true, enrollment });
+  const e = await Enrollment.findById(req.params.id);
+  if (!e) { res.status(404); throw new Error('Enrollment not found'); }
+  e.enrollmentStatus = 'active';
+  e.approvedBy = req.user._id;
+  e.approvedAt = new Date();
+  if (req.body.notes) e.adminNotes = req.body.notes;
+  await e.save();
+  res.json({ success: true, enrollment: e });
 }));
 
-// PATCH /api/admin/enrollments/:id/reject
 router.patch('/enrollments/:id/reject', asyncHandler(async (req, res) => {
-  const enrollment = await Enrollment.findById(req.params.id);
-  if (!enrollment) { res.status(404); throw new Error('Enrollment not found'); }
-
-  enrollment.enrollmentStatus = 'rejected';
-  if (req.body.notes) enrollment.adminNotes = req.body.notes;
-  await enrollment.save();
-
-  res.json({ success: true, enrollment });
+  const e = await Enrollment.findById(req.params.id);
+  if (!e) { res.status(404); throw new Error('Enrollment not found'); }
+  e.enrollmentStatus = 'rejected';
+  if (req.body.notes) e.adminNotes = req.body.notes;
+  await e.save();
+  res.json({ success: true, enrollment: e });
 }));
 
-// PATCH /api/admin/enrollments/:id/payment
 router.patch('/enrollments/:id/payment', asyncHandler(async (req, res) => {
-  const enrollment = await Enrollment.findById(req.params.id);
-  if (!enrollment) { res.status(404); throw new Error('Enrollment not found'); }
-
-  enrollment.paymentStatus = req.body.paymentStatus || 'paid';
-  await enrollment.save();
-
-  res.json({ success: true, enrollment });
+  const e = await Enrollment.findById(req.params.id);
+  if (!e) { res.status(404); throw new Error('Enrollment not found'); }
+  e.paymentStatus = req.body.paymentStatus || 'paid';
+  await e.save();
+  res.json({ success: true, enrollment: e });
 }));
 
-// GET /api/admin/users
+// ─── LESSONS ──────────────────────────────────────────────────────────────────
+
+// GET /api/admin/lessons?courseId=:id
+router.get('/lessons', asyncHandler(async (req, res) => {
+  const { courseId } = req.query;
+  if (!courseId) { res.status(400); throw new Error('courseId required'); }
+  const lessons = await Lesson.find({ course: courseId }).sort({ moduleId: 1, order: 1 });
+  res.json({ success: true, count: lessons.length, lessons });
+}));
+
+// POST /api/admin/lessons
+router.post('/lessons', asyncHandler(async (req, res) => {
+  const { courseId, moduleId, title, description, type, videoUrl, duration, order, isPreview, content, resources } = req.body;
+  if (!courseId || !moduleId || !title) { res.status(400); throw new Error('courseId, moduleId and title are required'); }
+
+  const lastLesson = await Lesson.findOne({ course: courseId, moduleId }).sort({ order: -1 });
+  const nextOrder = order ?? ((lastLesson?.order ?? -1) + 1);
+
+  const lesson = await Lesson.create({ course: courseId, moduleId, title, description, type, videoUrl, duration, order: nextOrder, isPreview, content, resources });
+  res.status(201).json({ success: true, lesson });
+}));
+
+// PUT /api/admin/lessons/:id
+router.put('/lessons/:id', asyncHandler(async (req, res) => {
+  const lesson = await Lesson.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  if (!lesson) { res.status(404); throw new Error('Lesson not found'); }
+  res.json({ success: true, lesson });
+}));
+
+// DELETE /api/admin/lessons/:id
+router.delete('/lessons/:id', asyncHandler(async (req, res) => {
+  const lesson = await Lesson.findByIdAndDelete(req.params.id);
+  if (!lesson) { res.status(404); throw new Error('Lesson not found'); }
+  res.json({ success: true, message: 'Lesson deleted' });
+}));
+
+// ─── USERS ────────────────────────────────────────────────────────────────────
 router.get('/users', asyncHandler(async (req, res) => {
   const users = await User.find().sort({ createdAt: -1 });
   res.json({ success: true, count: users.length, users });
 }));
 
-// PUT /api/admin/users/:id
 router.put('/users/:id', asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) { res.status(404); throw new Error('User not found'); }
@@ -117,11 +140,8 @@ router.put('/users/:id', asyncHandler(async (req, res) => {
   res.json({ success: true, user });
 }));
 
-// DELETE /api/admin/users/:id
 router.delete('/users/:id', asyncHandler(async (req, res) => {
-  if (req.params.id === req.user._id.toString()) {
-    res.status(400); throw new Error('Cannot delete yourself');
-  }
+  if (req.params.id === req.user._id.toString()) { res.status(400); throw new Error('Cannot delete yourself'); }
   const user = await User.findByIdAndDelete(req.params.id);
   if (!user) { res.status(404); throw new Error('User not found'); }
   res.json({ success: true, message: 'User deleted' });

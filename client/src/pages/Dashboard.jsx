@@ -133,7 +133,7 @@ const EnrollmentCard = ({ enrollment }) => {
               />
             </div>
           </div>
-          <Link to={`/courses/${course.slug}`} className="btn-gold w-full !py-2.5 text-sm">
+          <Link to={`/learn/${course.slug}`} className="btn-gold w-full !py-2.5 text-sm">
             Continue Learning →
           </Link>
         </>

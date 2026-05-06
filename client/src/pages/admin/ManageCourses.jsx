@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, Eye, EyeOff, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, EyeOff, X, BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../../api/axios';
 
@@ -144,6 +145,9 @@ const ManageCourses = () => {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center justify-end gap-2">
+                        <Link to={`/admin/courses/${c._id}/lessons`} title="Manage Lessons" className="p-2 hover:bg-gold/10 text-gold-dark rounded">
+                          <BookOpen size={16}/>
+                        </Link>
                         <button onClick={() => togglePublish(c)} title={c.isPublished ? 'Unpublish' : 'Publish'} className="p-2 hover:bg-navy-50 rounded">
                           {c.isPublished ? <EyeOff size={16}/> : <Eye size={16}/>}
                         </button>
