@@ -287,6 +287,25 @@ const Learn = () => {
               {activeLesson.type === 'pdf' && (
                 activeLesson.videoUrl ? (
                   <div className="mb-6">
+                    {/* Primary: always-visible open card */}
+                    <div className="bg-navy-900 border border-navy-700 rounded-xl p-8 flex flex-col sm:flex-row items-center gap-5 mb-4">
+                      <div className="w-14 h-14 bg-red-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <File size={28} className="text-red-400"/>
+                      </div>
+                      <div className="flex-1 min-w-0 text-center sm:text-left">
+                        <p className="text-cream font-medium">{activeLesson.title}</p>
+                        <p className="text-cream/40 text-sm mt-0.5">PDF Document</p>
+                      </div>
+                      <a
+                        href={activeLesson.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-gold flex items-center gap-2 flex-shrink-0"
+                      >
+                        <ExternalLink size={14}/> Open PDF
+                      </a>
+                    </div>
+                    {/* Inline embed — works for publicly shared files */}
                     <div className="w-full rounded-xl overflow-hidden border border-navy-700 bg-navy-900" style={{ height: '640px' }}>
                       <iframe
                         src={getPdfEmbedUrl(activeLesson.videoUrl)}
@@ -295,17 +314,12 @@ const Learn = () => {
                         allow="fullscreen"
                       />
                     </div>
-                    <a
-                      href={activeLesson.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-gold hover:text-gold-light text-sm mt-3 transition-colors"
-                    >
-                      <ExternalLink size={13}/> Open PDF in new tab
-                    </a>
+                    <p className="text-cream/30 text-xs mt-2">
+                      If the preview shows an error, click <strong className="text-cream/50">Open PDF</strong> above. For Google Drive files, make sure sharing is set to <em>"Anyone with the link"</em>.
+                    </p>
                   </div>
                 ) : (
-                  <div className="w-full bg-navy-900 rounded-xl flex items-center justify-center mb-6 border border-navy-700" style={{ height: '180px' }}>
+                  <div className="w-full bg-navy-900 rounded-xl flex items-center justify-center mb-6 border border-navy-700" style={{ height: '160px' }}>
                     <div className="text-center text-cream/30">
                       <File size={36} className="mx-auto mb-2"/>
                       <p className="text-sm">No PDF URL set for this lesson</p>
