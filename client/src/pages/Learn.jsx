@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Circle, ChevronDown, ChevronRight, ArrowLeft, ArrowRight, FileText, Video, ExternalLink, Lock, Clock } from 'lucide-react';
+import { CheckCircle, Circle, ChevronDown, ChevronRight, ArrowLeft, ArrowRight, FileText, Video, File, ExternalLink, Lock, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
 
@@ -10,6 +10,24 @@ const getEmbedUrl = (url) => {
   if (yt) return `https://www.youtube.com/embed/${yt[1]}?rel=0`;
   const vimeo = url.match(/vimeo\.com\/(\d+)/);
   if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+  return url;
+};
+
+const getPdfEmbedUrl = (url) => {
+  if (!url) return null;
+  // Google Drive file link → preview embed
+  const driveFile = url.match(/drive\.google\.com\/file\/d\/([^/?\s]+)/);
+  if (driveFile) return `https://drive.google.com/file/d/${driveFile[1]}/preview`;
+  // Google Drive open?id= link
+  const driveOpen = url.match(/drive\.google\.com\/open\?id=([^&\s]+)/);
+  if (driveOpen) return `https://drive.google.com/file/d/${driveOpen[1]}/preview`;
+  // Direct .pdf URL → Google Docs viewer
+  if (/\.pdf(\?|$)/i.test(url)) return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+  // Dropbox → swap to streaming URL then Google Docs viewer
+  if (url.includes('dropbox.com')) {
+    const direct = url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace(/[?&]dl=0/, '');
+    return `https://docs.google.com/viewer?url=${encodeURIComponent(direct)}&embedded=true`;
+  }
   return url;
 };
 
@@ -263,6 +281,37 @@ const Learn = () => {
                     <p className="text-sm">Video URL not set for this lesson</p>
                   </div>
                 </div>
+              )}
+
+              {/* PDF */}
+              {activeLesson.type === 'pdf' && (
+                activeLesson.videoUrl ? (
+                  <div className="mb-6">
+                    <div className="w-full rounded-xl overflow-hidden border border-navy-700 bg-navy-900" style={{ height: '640px' }}>
+                      <iframe
+                        src={getPdfEmbedUrl(activeLesson.videoUrl)}
+                        className="w-full h-full"
+                        title={activeLesson.title}
+                        allow="fullscreen"
+                      />
+                    </div>
+                    <a
+                      href={activeLesson.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-gold hover:text-gold-light text-sm mt-3 transition-colors"
+                    >
+                      <ExternalLink size={13}/> Open PDF in new tab
+                    </a>
+                  </div>
+                ) : (
+                  <div className="w-full bg-navy-900 rounded-xl flex items-center justify-center mb-6 border border-navy-700" style={{ height: '180px' }}>
+                    <div className="text-center text-cream/30">
+                      <File size={36} className="mx-auto mb-2"/>
+                      <p className="text-sm">No PDF URL set for this lesson</p>
+                    </div>
+                  </div>
+                )
               )}
 
               {/* Lesson header */}
