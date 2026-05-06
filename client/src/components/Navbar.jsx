@@ -43,9 +43,9 @@ const Navbar = () => {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="relative w-12 h-10 bg-gradient-gold rounded-lg flex items-center justify-center shadow-gold-glow group-hover:scale-105 transition-transform">
-              <span className="font-display font-black text-navy-900 text-base tracking-tight leading-none">LW</span>
-              <span className="absolute -inset-1 rounded-lg ring-1 ring-gold/40 group-hover:ring-gold transition-colors" aria-hidden />
+            <div className="relative w-12 h-10 bg-white rounded-lg overflow-hidden shadow-sm group-hover:scale-105 transition-transform flex-shrink-0">
+              <img src="/logo.png" alt="Legacy Wealth Institute" className="w-full h-full object-contain p-0.5" />
+              <span className="absolute -inset-1 rounded-lg ring-1 ring-gold/40 group-hover:ring-gold transition-colors pointer-events-none" aria-hidden />
             </div>
             <div className="hidden sm:block">
               <div className="font-display text-cream text-lg leading-none">Legacy Wealth</div>
