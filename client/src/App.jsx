@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import LeadCapturePopup from './components/LeadCapturePopup';
+import ScrollToTop from './components/ScrollToTop';
 
 import Home from './pages/Home';
 import About from './pages/About';
@@ -26,15 +27,18 @@ import ManageLessons from './pages/admin/ManageLessons';
 
 function App() {
   return (
-    <Routes>
-      {/* Full-screen player — no Navbar/Footer */}
-      <Route path="/learn/:slug" element={
-        <ProtectedRoute><Learn /></ProtectedRoute>
-      } />
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* Full-screen player — no Navbar/Footer */}
+        <Route path="/learn/:slug" element={
+          <ProtectedRoute><Learn /></ProtectedRoute>
+        } />
 
-      {/* Standard layout */}
-      <Route path="/*" element={<StandardLayout />} />
-    </Routes>
+        {/* Standard layout */}
+        <Route path="/*" element={<StandardLayout />} />
+      </Routes>
+    </>
   );
 }
 
