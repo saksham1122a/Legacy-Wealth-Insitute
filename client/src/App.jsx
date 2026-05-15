@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -42,6 +42,11 @@ function App() {
   );
 }
 
+function CourseRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`/courses/${slug}`} replace />;
+}
+
 function StandardLayout() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -55,6 +60,9 @@ function StandardLayout() {
           <Route path="/contact"      element={<Contact />} />
           <Route path="/courses"      element={<Courses />} />
           <Route path="/courses/:slug" element={<CourseDetail />} />
+          {/* Legacy/singular route redirects */}
+          <Route path="/course" element={<Navigate to="/courses" replace />} />
+          <Route path="/course/:slug" element={<CourseRedirect />} />
           <Route path="/login"        element={<Login />} />
           <Route path="/signup"       element={<Signup />} />
 

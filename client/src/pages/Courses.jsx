@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Clock, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api/axios';
@@ -18,7 +18,22 @@ const Courses = () => {
   }, []);
 
   const categories = ['All', 'Mentorship', 'SMC Trading', 'Investing', 'Forex', 'Foundation'];
-  const filtered = filter === 'All' ? courses : courses.filter(c => c.category === filter);
+
+  const normalize = (s) => s?.toString?.().trim().toLowerCase?.() || '';
+  const filtered = filter === 'All'
+    ? courses
+    : courses.filter(c => normalize(c.category) === normalize(filter));
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const cat = params.get('category');
+    if (cat) {
+      // Accept any non-empty category from querystring — normalize for comparison
+      setFilter(decodeURIComponent(cat));
+    }
+  }, [location.search]);
 
   return (
     <div className="bg-cream min-h-screen">
@@ -120,6 +135,8 @@ const Courses = () => {
 const CourseCard = ({ course }) => {
   const effectivePrice = course.discountPrice > 0 ? course.discountPrice : course.price;
   const hasDiscount = course.discountPrice > 0 && course.discountPrice < course.price;
+
+  const navigate = useNavigate();
 
   return (
     <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>

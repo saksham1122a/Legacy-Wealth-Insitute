@@ -101,9 +101,9 @@ const About = () => (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
                 <div className="w-32 h-32 rounded-full bg-gold/20 border-2 border-gold/40 flex items-center justify-center mx-auto mb-6 backdrop-blur">
-                  <span className="font-display text-6xl text-gold">SS</span>
+                  <span className="font-display text-6xl text-gold">AJ</span>
                 </div>
-                <div className="font-display text-3xl text-cream">Sanjeev Sharma</div>
+                <div className="font-display text-3xl text-cream">Akshat Jain</div>
                 <div className="eyebrow-cream mt-2">Founder &amp; Lead Mentor</div>
               </div>
             </div>

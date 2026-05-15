@@ -1,6 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
+const hpp = require('hpp');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
@@ -15,6 +21,26 @@ const paymentRoutes = require('./routes/payment');
 
 const app = express();
 connectDB();
+
+// Security middlewares
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
+app.use(helmet());
+app.use(mongoSanitize());
+app.use(xssClean());
+app.use(hpp());
+app.use(cookieParser());
+
+// Basic rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // limit each IP to 200 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false
+});
+app.use(limiter);
 
 const allowedOrigins = [
   'http://localhost:5173',

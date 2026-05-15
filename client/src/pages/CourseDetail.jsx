@@ -14,9 +14,16 @@ const CourseDetail = () => {
   const [enrolling, setEnrolling] = useState(false);
 
   useEffect(() => {
+    console.log('CourseDetail: fetching slug=', slug);
     api.get(`/courses/${slug}`)
-      .then(({ data }) => setCourse(data.course))
-      .catch(() => toast.error('Course not found'))
+      .then(({ data }) => {
+        console.log('CourseDetail: api response', data);
+        setCourse(data.course);
+      })
+      .catch((err) => {
+        console.error('CourseDetail: api error', err?.response?.data || err);
+        toast.error('Course not found');
+      })
       .finally(() => setLoading(false));
   }, [slug]);
 
@@ -54,7 +61,7 @@ const CourseDetail = () => {
     <div className="bg-cream min-h-screen">
       <section className="bg-navy-900 text-cream py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/courses" className="inline-flex items-center gap-1 text-cream/70 hover:text-gold text-sm mb-6">
+          <Link to={`/courses?category=${encodeURIComponent(course.category || '')}`} className="inline-flex items-center gap-1 text-cream/70 hover:text-gold text-sm mb-6">
             <ArrowLeft size={16}/> Back to Programs
           </Link>
 

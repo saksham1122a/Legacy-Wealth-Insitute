@@ -204,7 +204,7 @@ const LeadCapturePopup = () => {
                   required
                   autoFocus
                   className="popup-field"
-                  placeholder="Rahul"
+                  placeholder="Saksham"
                   value={form.firstName}
                   onChange={set('firstName')}
                 />
@@ -213,7 +213,7 @@ const LeadCapturePopup = () => {
                 <label className="popup-label">Last Name</label>
                 <input
                   className="popup-field"
-                  placeholder="Sharma"
+                  placeholder="Nanda"
                   value={form.lastName}
                   onChange={set('lastName')}
                 />
@@ -240,7 +240,7 @@ const LeadCapturePopup = () => {
                   required
                   type="email"
                   className="popup-field"
-                  placeholder="rahul@email.com"
+                  placeholder="saksham@email.com"
                   value={form.email}
                   onChange={set('email')}
                 />
@@ -253,7 +253,7 @@ const LeadCapturePopup = () => {
                 <label className="popup-label">City</label>
                 <input
                   className="popup-field"
-                  placeholder="Mumbai"
+                  placeholder="Ludhiana"
                   value={form.city}
                   onChange={set('city')}
                 />

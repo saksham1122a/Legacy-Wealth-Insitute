@@ -41,7 +41,7 @@ const PROGRAMS = [
 
 const STUDENT_WINS = [
   {
-    initials: 'RM', name: 'Rahul M.', role: 'Software Engineer', city: 'Bengaluru',
+    initials: 'SN', name: 'Saksham N.', role: 'Software Engineer', city: 'Bengaluru',
     before: '5 years of trading on YouTube setups. Consistently breaking even or losing small amounts every quarter.',
     after: 'Positive for 6 straight months. Understands WHY each trade works — not just where to enter.',
     cohort: 'Cohort 9'
@@ -63,7 +63,7 @@ const STUDENT_WINS = [
 const TESTIMONIALS = [
   {
     quote: "I'd been trading for 5 years on YouTube content and breaking even at best. The 90-day cohort was the first time someone showed me how to actually read structure. Six months later, I'm consistently green — and I know why.",
-    name: 'Rahul M.', role: 'Software engineer · Bengaluru', rating: 5, initials: 'RM'
+    name: 'Saksham N.', role: 'Software engineer · Bengaluru', rating: 5, initials: 'SN'
   },
   {
     quote: "What I value isn't the entries — it's the journaling discipline. Sanjeev made me realise my edge wasn't a setup, it was a process. That single shift changed everything about how I trade.",
@@ -458,14 +458,14 @@ const Home = () => {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
                     <div className="w-32 h-32 rounded-full bg-gold/20 border-2 border-gold/40 flex items-center justify-center mx-auto mb-6 backdrop-blur">
-                      <span className="font-display text-6xl text-gold">SS</span>
+                      <span className="font-display text-6xl text-gold">AJ</span>
                     </div>
-                    <div className="font-display text-3xl text-cream">Sanjeev Sharma</div>
+                    <div className="font-display text-3xl text-cream">Akshat Jain</div>
                     <div className="eyebrow-cream mt-2">Founder &amp; Lead Mentor</div>
                   </div>
                 </div>
                 <div className="absolute bottom-6 left-6 right-6 flex justify-between text-cream/55 text-xs uppercase tracking-widest">
-                  <span className="flex items-center gap-1"><MapPin size={10} /> Mumbai</span>
+                  <span className="flex items-center gap-1"><MapPin size={10} /> Ludhiana</span>
                   <span>Est. 2019</span>
                 </div>
               </div>

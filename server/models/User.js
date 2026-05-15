@@ -33,7 +33,13 @@ const userSchema = new mongoose.Schema({
     default: 'user'
   },
   avatar: { type: String, default: '' },
-  isActive: { type: Boolean, default: true }
+  isActive: { type: Boolean, default: true },
+  refreshTokens: [
+    {
+      token: { type: String },
+      createdAt: { type: Date, default: Date.now }
+    }
+  ]
 }, { timestamps: true });
 
 // Hash password before save
