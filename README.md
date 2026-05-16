@@ -41,41 +41,6 @@ cd client
 npm install
 ```
 
-### 2. Set up environment variables
-
-```bash
-cd server
-cp .env.example .env
-```
-
-Open `server/.env` and update:
-
-- `MONGO_URI` — your MongoDB connection string
-  - Local: `mongodb://localhost:27017/legacy-wealth`
-  - Atlas: `mongodb+srv://<user>:<password>@cluster.mongodb.net/legacy-wealth`
-- `JWT_SECRET` — change to a long random string (e.g., 50+ characters)
-- `ADMIN_EMAIL` and `ADMIN_PASSWORD` — credentials for the seeded admin
-- `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` — leave as-is for now; add when you integrate payments
-
-### 3. Seed the database
-
-This creates an admin user and 3 sample courses.
-
-```bash
-# In the server directory
-npm run seed
-```
-
-You'll see output like:
-```
-✅ Seed complete!
-   Admin login:
-   Email:    admin@legacywealth.in
-   Password: ChangeThisAdminPass2026!
-```
-
-### 4. Run both servers
-
 **Terminal 1 — Backend:**
 ```bash
 cd server
@@ -90,11 +55,7 @@ npm run dev
 ```
 Should print: `Local: http://localhost:5173`
 
-### 5. Open your browser
 
-→ **http://localhost:5173**
-
-Login with the admin credentials from step 3 to access `/admin`. Or sign up as a regular user.
 
 ---
 
@@ -135,41 +96,7 @@ legacy-wealth/
     └── vite.config.js         # Proxy /api → backend
 ```
 
----
-
-## 🔑 Default Admin Login
-
-After running `npm run seed`:
-
-- **Email:** `admin@legacywealth.in` (or whatever you set in `.env`)
-- **Password:** `ChangeThisAdminPass2026!` (or whatever you set in `.env`)
-
-⚠️ **Change this password immediately** after first login (PUT `/api/auth/me` with new password, or update directly in MongoDB).
-
----
-
-## 💳 Enabling Razorpay Payments
-
-The payment routes are built but disabled until you add keys.
-
-1. Sign up at https://dashboard.razorpay.com/
-2. Get your **Test Mode** keys (start with `rzp_test_`)
-3. Update `server/.env`:
-   ```
-   RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxxxx
-   RAZORPAY_KEY_SECRET=your_secret
-   ```
-4. Restart the backend server.
-
-The frontend currently does direct enrollment for v1 simplicity. To wire up Razorpay checkout, update `CourseDetail.jsx` to:
-1. Call `POST /api/payment/order` to get an order ID
-2. Open Razorpay checkout (`razorpay-checkout.js` script)
-3. On success, call `POST /api/payment/verify`
-4. Then call `POST /api/enrollments` with the verified payment ID
-
-A complete Razorpay frontend integration takes ~50 lines. Comments in `CourseDetail.jsx` mark where to add it.
-
----
+-
 
 ## 🌐 API Reference (Quick)
 
@@ -289,4 +216,4 @@ The "investment dashboard" feature was **intentionally left out** — that requi
 
 ---
 
-Built with ❤️ for Legacy Wealth Institute. Trade with logic. Invest with patience.
+Made By Saksham for Legacy Wealth Institute. Trade with logic. Invest with patience.
