@@ -24,6 +24,7 @@ import ManageUsers from './pages/admin/ManageUsers';
 import ManageLeads from './pages/admin/ManageLeads';
 import ManageEnrollments from './pages/admin/ManageEnrollments';
 import ManageLessons from './pages/admin/ManageLessons';
+import UserInvestmentSetup from './pages/admin/UserInvestmentSetup';
 
 function App() {
   return (
@@ -87,6 +88,9 @@ function StandardLayout() {
           } />
           <Route path="/admin/enrollments" element={
             <AdminRoute><ManageEnrollments /></AdminRoute>
+          } />
+          <Route path="/admin/users/:userId/investment" element={
+            <AdminRoute><UserInvestmentSetup /></AdminRoute>
           } />
 
           <Route path="*" element={<NotFound />} />

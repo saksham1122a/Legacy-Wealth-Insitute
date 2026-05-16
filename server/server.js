@@ -18,6 +18,7 @@ const enrollmentRoutes = require('./routes/enrollments');
 const adminRoutes = require('./routes/admin');
 const leadRoutes = require('./routes/leads');
 const paymentRoutes = require('./routes/payment');
+const investmentRoutes = require('./routes/investments');
 
 const app = express();
 connectDB();
@@ -75,6 +76,7 @@ app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/investments', investmentRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

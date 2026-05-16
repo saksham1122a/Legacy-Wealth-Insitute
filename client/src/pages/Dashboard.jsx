@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Calendar, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { BookOpen, Calendar, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle, IndianRupee } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -21,12 +21,22 @@ const paymentConfig = {
 const Dashboard = () => {
   const { user } = useAuth();
   const [enrollments, setEnrollments] = useState([]);
+  const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/enrollments/me')
-      .then(({ data }) => setEnrollments(data.enrollments))
-      .catch(() => setEnrollments([]))
+    Promise.all([
+      api.get('/enrollments/me'),
+      api.get('/investments/me')
+    ])
+      .then(([enrollmentsRes, investmentsRes]) => {
+        setEnrollments(enrollmentsRes.data.enrollments || []);
+        setInvestments(investmentsRes.data.investments || []);
+      })
+      .catch(() => {
+        setEnrollments([]);
+        setInvestments([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -120,6 +130,51 @@ const Dashboard = () => {
                 <EnrollmentCard enrollment={e}/>
               </motion.div>
             ))}
+          </motion.div>
+        )}
+
+        {/* Investment History */}
+        <motion.h2
+          className="font-display text-2xl text-navy mb-5 mt-10"
+          variants={fadeUp} initial="hidden" animate="show"
+        >
+          Investment History
+        </motion.h2>
+
+        {!investments.length ? (
+          <motion.div variants={fadeUp} initial="hidden" animate="show" className="card p-10 text-center">
+            <IndianRupee className="text-gold mx-auto mb-3" size={40}/>
+            <h3 className="font-display text-xl text-navy mb-2">No investments yet</h3>
+            <p className="text-ink/60">Your investment history will appear here once added by the admin.</p>
+          </motion.div>
+        ) : (
+          <motion.div
+            className="card p-6"
+            variants={fadeUp} initial="hidden" animate="show"
+          >
+            <div className="space-y-3">
+              {investments.map((inv) => (
+                <div key={inv._id} className="flex items-start justify-between p-4 border border-navy-100 rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="font-display text-lg text-navy">₹{inv.amount.toLocaleString('en-IN')}</span>
+                    </div>
+                    {inv.description && (
+                      <p className="text-sm text-ink/70 mb-2">{inv.description}</p>
+                    )}
+                    <div className="flex items-center gap-4 text-xs text-ink/60">
+                      <span className="flex items-center gap-1">
+                        <Calendar size={12} />
+                        {new Date(inv.date).toLocaleDateString('en-IN')}
+                      </span>
+                      <span>
+                        Added by {inv.addedBy?.name || 'Admin'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </motion.div>
         )}
       </div>

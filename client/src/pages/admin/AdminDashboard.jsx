@@ -6,6 +6,8 @@ import api from '../../api/axios';
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   useEffect(() => {
     api.get('/admin/stats')
@@ -13,6 +15,14 @@ const AdminDashboard = () => {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const fetchUsers = () => {
+    setUsersLoading(true);
+    api.get('/admin/users')
+      .then(({ data }) => setUsers(data.users || []))
+      .catch(() => {})
+      .finally(() => setUsersLoading(false));
+  };
 
   if (loading) return <div className="min-h-[60vh] flex items-center justify-center text-navy">Loading…</div>;
 
@@ -89,6 +99,51 @@ const AdminDashboard = () => {
           <Link to="/admin/enrollments" className="mt-4 inline-block text-sm text-gold-dark hover:underline">
             View all enrollments →
           </Link>
+        </div>
+
+        {/* User Investment Setup */}
+        <div className="card p-6">
+          <h2 className="font-display text-xl text-navy mb-4 flex items-center gap-2">
+            <Users className="text-gold"/> User Investment Setup
+          </h2>
+          <p className="text-sm text-ink/60 mb-4">Fetch users and set up investments for individual profiles</p>
+          
+          {!users.length ? (
+            <button
+              onClick={fetchUsers}
+              disabled={usersLoading}
+              className="px-4 py-2 bg-navy text-gold rounded-lg hover:bg-navy-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {usersLoading ? 'Fetching users...' : 'Fetch Users'}
+            </button>
+          ) : (
+            <div className="space-y-3">
+              {users.map(user => (
+                <Link
+                  key={user._id}
+                  to={`/admin/users/${user._id}/investment`}
+                  className="flex items-center justify-between py-3 px-4 border border-navy-100 rounded-lg hover:bg-navy-50 hover:border-gold transition-all"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-navy text-gold flex items-center justify-center font-medium">
+                      {user.name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                    <div>
+                      <div className="font-medium text-navy">{user.name || 'Unknown'}</div>
+                      <div className="text-xs text-ink/60">{user.email}</div>
+                    </div>
+                  </div>
+                  <ArrowRight className="text-gold-dark" size={18}/>
+                </Link>
+              ))}
+              <button
+                onClick={() => setUsers([])}
+                className="mt-4 text-sm text-ink/60 hover:text-navy transition-colors"
+              >
+                Clear list
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

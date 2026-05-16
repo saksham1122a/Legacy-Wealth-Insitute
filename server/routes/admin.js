@@ -5,6 +5,7 @@ const Course = require('../models/Course');
 const Enrollment = require('../models/Enrollment');
 const Lesson = require('../models/Lesson');
 const Lead = require('../models/Lead');
+const Investment = require('../models/Investment');
 const { protect } = require('../middleware/auth');
 const { admin } = require('../middleware/admin');
 
@@ -137,6 +138,86 @@ router.delete('/lessons/:id', asyncHandler(async (req, res) => {
 router.get('/users', asyncHandler(async (req, res) => {
   const users = await User.find().sort({ createdAt: -1 });
   res.json({ success: true, count: users.length, users });
+}));
+
+// ─── INVESTMENTS ────────────────────────────────────────────────────────────────
+// These must come before /users/:id to avoid route conflicts
+router.get('/users/:userId/investments', asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.userId);
+  if (!user) { res.status(404); throw new Error('User not found'); }
+  
+  const investments = await Investment.find({ user: req.params.userId })
+    .populate('addedBy', 'name email')
+    .sort({ date: -1 });
+  
+  res.json({ success: true, count: investments.length, investments });
+}));
+
+router.post('/users/:userId/investments', asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.userId);
+  if (!user) { res.status(404); throw new Error('User not found'); }
+  
+  const { amount, description, date } = req.body;
+  if (!amount || !date) { 
+    res.status(400); 
+    throw new Error('Amount and date are required'); 
+  }
+  
+  const investment = await Investment.create({
+    user: req.params.userId,
+    amount,
+    description,
+    date,
+    addedBy: req.user._id
+  });
+  
+  const populatedInvestment = await Investment.findById(investment._id)
+    .populate('addedBy', 'name email');
+  
+  res.status(201).json({ success: true, investment: populatedInvestment });
+}));
+
+router.delete('/users/:userId/investments/:investmentId', asyncHandler(async (req, res) => {
+  const investment = await Investment.findOneAndDelete({
+    _id: req.params.investmentId,
+    user: req.params.userId
+  });
+  
+  if (!investment) { res.status(404); throw new Error('Investment not found'); }
+  
+  res.json({ success: true, message: 'Investment deleted' });
+}));
+
+router.put('/users/:userId/investments/:investmentId', asyncHandler(async (req, res) => {
+  const investment = await Investment.findOne({
+    _id: req.params.investmentId,
+    user: req.params.userId
+  });
+  
+  if (!investment) { res.status(404); throw new Error('Investment not found'); }
+  
+  const { amount, description, date } = req.body;
+  if (!amount || !date) { 
+    res.status(400); 
+    throw new Error('Amount and date are required'); 
+  }
+  
+  investment.amount = amount;
+  investment.description = description;
+  investment.date = date;
+  
+  await investment.save();
+  
+  const populatedInvestment = await Investment.findById(investment._id)
+    .populate('addedBy', 'name email');
+  
+  res.json({ success: true, investment: populatedInvestment });
+}));
+
+router.get('/users/:userId', asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.userId);
+  if (!user) { res.status(404); throw new Error('User not found'); }
+  res.json({ success: true, user });
 }));
 
 router.put('/users/:id', asyncHandler(async (req, res) => {
