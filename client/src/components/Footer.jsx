@@ -64,9 +64,9 @@ const Footer = () => (
             Premium financial education focused on Smart Money Concepts, institutional trading logic, and long-term wealth building for serious Indian investors.
           </p>
           <div className="space-y-2.5 text-sm text-cream/60">
-            <div className="flex items-center gap-2"><MapPin size={14} className="text-gold flex-shrink-0" /> Mumbai, India</div>
-            <div className="flex items-center gap-2"><Mail size={14} className="text-gold flex-shrink-0" /> hello@legacywealth.in</div>
-            <div className="flex items-center gap-2"><Phone size={14} className="text-gold flex-shrink-0" /> +91 98XXX XXXXX</div>
+            <div className="flex items-center gap-2"><MapPin size={14} className="text-gold flex-shrink-0" /> Ludhiana, India</div>
+            <div className="flex items-center gap-2"><Mail size={14} className="text-gold flex-shrink-0" /> akshat@legacywealth.info</div>
+            <div className="flex items-center gap-2"><Phone size={14} className="text-gold flex-shrink-0" /> +91 6284364679</div>
           </div>
         </motion.div>
 
@@ -100,7 +100,7 @@ const Footer = () => (
             <SocialIcon href="https://instagram.com/legacywealth.institute" icon={<Instagram size={17} />} label="Instagram" />
             <SocialIcon href="#" icon={<Youtube size={17} />} label="YouTube" />
             <SocialIcon href="#" icon={<Linkedin size={17} />} label="LinkedIn" />
-            <SocialIcon href="mailto:hello@legacywealth.in" icon={<Mail size={17} />} label="Email" />
+            <SocialIcon href="mailto:akshat@legacywealth.info" icon={<Mail size={17} />} label="Email" />
           </div>
           <p className="text-xs text-cream/55 leading-relaxed">
             DM <span className="text-gold font-bold">"LEGACY"</span> on Instagram to apply for the next cohort.

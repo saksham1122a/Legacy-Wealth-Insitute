@@ -15,7 +15,7 @@ const sampleCourses = [
     price: 75000,
     discountPrice: 49999,
     durationDays: 90,
-    instructor: 'Sanjeev Sharma',
+    instructor: 'Akshat Jain',
     isPublished: true,
     highlights: [
       'Live weekly mentorship sessions',
@@ -45,7 +45,7 @@ const sampleCourses = [
     price: 12999,
     discountPrice: 7999,
     durationDays: 60,
-    instructor: 'Sanjeev Sharma',
+    instructor: 'Akshat Jain',
     isPublished: true,
     highlights: [
       'Goal-based investing framework',
@@ -70,7 +70,7 @@ const sampleCourses = [
     price: 9999,
     discountPrice: 5999,
     durationDays: 45,
-    instructor: 'Sanjeev Sharma',
+    instructor: 'Akshat Jain',
     isPublished: true,
     highlights: [
       'NSE/BSE compliant content only',
@@ -97,7 +97,7 @@ const seed = async () => {
 
     console.log('👤 Creating admin user...');
     await User.create({
-      name: process.env.ADMIN_NAME || 'Sanjeev Sharma',
+      name: process.env.ADMIN_NAME || 'Akshat Jain',
       email: process.env.ADMIN_EMAIL || 'admin@legacywealth.in',
       password: process.env.ADMIN_PASSWORD || 'ChangeThisAdminPass2026!',
       role: 'admin'

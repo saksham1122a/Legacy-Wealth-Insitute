@@ -478,7 +478,7 @@ const Home = () => {
               <div className="eyebrow mb-4">From the Founder</div>
               <Quote className="text-gold mb-6" size={36} />
               <blockquote className="font-display text-2xl md:text-3xl text-navy leading-snug mb-6 text-pretty">
-                I lost my first ₹4 lakh trading on tips, retail patterns, and other people's conviction. The next decade I spent building a process that didn't depend on anyone else being right.{' '}
+                I lost my first ₹80 lakh trading on tips, retail patterns, and other people's conviction. The next decade I spent building a process that didn't depend on anyone else being right.{' '}
                 <span className="italic text-gold-dark">That process is what we teach.</span>
               </blockquote>
               <p className="text-ink/70 leading-relaxed mb-8 text-pretty">

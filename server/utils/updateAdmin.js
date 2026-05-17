@@ -6,7 +6,7 @@ const update = async () => {
   try {
     await connectDB();
     const email = process.env.ADMIN_EMAIL || 'admin@legacywealth.in';
-    const name = process.env.ADMIN_NAME || 'Saksham Nanda';
+    const name = process.env.ADMIN_NAME || 'Akshat Jain';
     const user = await User.findOneAndUpdate({ email }, { name }, { new: true });
     if (user) {
       console.log(`Updated admin: ${user.email} -> ${user.name}`);
