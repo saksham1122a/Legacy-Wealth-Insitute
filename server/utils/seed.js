@@ -99,7 +99,7 @@ const seed = async () => {
     await User.create({
       name: process.env.ADMIN_NAME || 'Akshat Jain',
       email: process.env.ADMIN_EMAIL || 'admin@legacywealth.in',
-      password: process.env.ADMIN_PASSWORD || 'ChangeThisAdminPass2026!',
+      password: process.env.ADMIN_PASSWORD || 'LegacyAdmin2026!',
       role: 'admin'
     });
 
@@ -109,7 +109,7 @@ const seed = async () => {
     console.log('\n✅ Seed complete!');
     console.log(`\n   Admin login:`);
     console.log(`   Email:    ${process.env.ADMIN_EMAIL || 'admin@legacywealth.in'}`);
-    console.log(`   Password: ${process.env.ADMIN_PASSWORD || 'ChangeThisAdminPass2026!'}\n`);
+    console.log(`   Password: ${process.env.ADMIN_PASSWORD || 'LegacyAdmin2026!'}\n`);
 
     process.exit(0);
   } catch (err) {
