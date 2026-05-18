@@ -146,8 +146,8 @@ const Contact = () => {
           >
             <motion.div variants={fadeRight}>
               <InfoCard icon={<Mail />} title="Email">
-                <a href="mailto:hello@legacywealth.in" className="text-navy hover:text-gold-dark transition-colors font-medium">
-                  hello@legacywealth.in
+                <a href="mailto:akshat@legacywealth.info" className="text-navy hover:text-gold-dark transition-colors font-medium">
+                  akshat@legacywealth.info
                 </a>
                 <p className="text-sm text-ink/60 mt-1">For applications and inquiries</p>
               </InfoCard>
@@ -155,7 +155,7 @@ const Contact = () => {
 
             <motion.div variants={fadeRight}>
               <InfoCard icon={<Phone />} title="Phone">
-                <span className="text-navy font-medium">+91 98XXX XXXXX</span>
+                <span className="text-navy font-medium">+91 6284364679</span>
                 <p className="text-sm text-ink/60 mt-1">Mon–Fri, 10 AM – 7 PM IST</p>
               </InfoCard>
             </motion.div>
@@ -168,7 +168,7 @@ const Contact = () => {
                   rel="noreferrer"
                   className="text-navy hover:text-gold-dark transition-colors font-medium inline-flex items-center gap-1"
                 >
-                  @legacywealth.institute <ArrowRight size={14} />
+                  @legacywealth <ArrowRight size={14} />
                 </a>
                 <p className="text-sm text-ink/60 mt-1">Fastest path for cohort applications</p>
               </InfoCard>
@@ -176,7 +176,7 @@ const Contact = () => {
 
             <motion.div variants={fadeRight}>
               <InfoCard icon={<MapPin />} title="Studio">
-                <span className="text-navy font-medium">Mumbai, Maharashtra</span>
+                <span className="text-navy font-medium">Ludhiana, Punjab</span>
                 <p className="text-sm text-ink/60 mt-1">By appointment only</p>
               </InfoCard>
             </motion.div>

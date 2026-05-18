@@ -241,24 +241,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Media ticker */}
-        <div className="relative border-t border-white/8 bg-navy-950/60 backdrop-blur-sm">
-          <div className="container-page py-5 flex items-center gap-6 overflow-hidden">
-            <span className="text-[10px] uppercase tracking-super-wide text-cream/35 whitespace-nowrap shrink-0">As featured in</span>
-            <div className="flex gap-10 mask-fade-r overflow-hidden flex-1">
-              <div className="flex gap-10 animate-ticker shrink-0">
-                {MEDIA_MENTIONS.map((m, i) => (
-                  <span key={i} className="font-display italic text-cream/45 text-base whitespace-nowrap hover:text-gold/60 transition-colors cursor-default">{m}</span>
-                ))}
-              </div>
-              <div className="flex gap-10 animate-ticker shrink-0" aria-hidden>
-                {MEDIA_MENTIONS.map((m, i) => (
-                  <span key={`d-${i}`} className="font-display italic text-cream/45 text-base whitespace-nowrap">{m}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </section>
 
       {/* ─────────────────────────── PHILOSOPHY ─────────────────────────── */}

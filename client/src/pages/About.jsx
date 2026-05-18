@@ -117,7 +117,7 @@ const About = () => (
           <div className="eyebrow-cream mb-4">From the Founder</div>
           <Quote className="text-gold mb-6" size={36} />
           <blockquote className="font-display text-2xl md:text-3xl text-cream leading-snug mb-6 text-pretty">
-            I started trading in 2012. By 2014 I was down ₹4 lakh, demoralised, and certain I was wrong about markets. Turns out I wasn't wrong about markets — I was wrong about <span className="italic text-gold">myself</span>. The decade since has been about building a process that survives my own bad days.
+            I started trading in 2012. By 2014 I was down ₹80 lakh, demoralised, and certain I was wrong about markets. Turns out I wasn't wrong about markets — I was wrong about <span className="italic text-gold">myself</span>. The decade since has been about building a process that survives my own bad days.
           </blockquote>
           <p className="text-cream/70 leading-relaxed mb-8 text-pretty">
             That process — refined over 12 years, 5,000+ trades, and four bear markets — is what we now teach. Not because I have all the answers, but because I've made every expensive mistake so my students don't have to.
