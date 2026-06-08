@@ -18,22 +18,22 @@ const MEDIA_MENTIONS = ['Moneycontrol', 'ET Markets', 'CNBC TV18', 'Mint', 'Bloo
 const PROGRAMS = [
   {
     tag: 'Investing', title: 'Investing Foundations: Build Wealth The Lasts',
-    desc: 'From your first SIP to your first core.',
-    level: 'Intermediate → Advanced', modules: '4 modules', days: '60 days',
+    desc: 'From your first SIP to your first core',
+    level: 'Intermediate → Advanced', modules: '4 modules', hours: '60 days',
     price: '7,999', originalPrice: '12,999',
     icon: <GraduationCap size={20} />, accent: true
   },
   {
     tag: 'Forex', title: 'Forex Foundations: Currency Markets for Indian Traders',
     desc: 'Currency derivatives, hedging, and exchange-listed forex - the legal way.',
-    level: 'Beginner → Intermediate', modules: '4 modules', days: '45 days',
+    level: 'Beginner → Intermediate', modules: '4 modules', hours: '45 days',
     price: '5,999', originalPrice: '9,999',
     icon: <LineChart size={20} />
   },
   {
     tag: 'Mentorship', title: 'Smart Money Concepts: 90-Day Mentorship',
     desc: 'Trade like the institutions. Stop being their liquidity',
-    level: 'All levels', modules: '7 modules', days: '90 days',
+    level: 'All levels', modules: '7 modules', hours: '90 days',
     price: '25,000', originalPrice: '50,000',
     icon: <BookOpen size={20} />
   }
