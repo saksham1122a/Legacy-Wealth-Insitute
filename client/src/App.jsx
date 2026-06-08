@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Methodology from './pages/Methodology';
 import Contact from './pages/Contact';
+import Blogs from './pages/Blogs';
 import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
 import Login from './pages/Login';
@@ -59,6 +60,7 @@ function StandardLayout() {
           <Route path="/about"        element={<About />} />
           <Route path="/methodology"  element={<Methodology />} />
           <Route path="/contact"      element={<Contact />} />
+          <Route path="/blogs"        element={<Blogs />} />
           <Route path="/courses"      element={<Courses />} />
           <Route path="/courses/:slug" element={<CourseDetail />} />
           {/* Legacy/singular route redirects */}

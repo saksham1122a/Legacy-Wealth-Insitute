@@ -55,7 +55,7 @@ const Navbar = () => {
           <nav className="hidden md:flex items-center gap-9">
             <NavLink to="/" end className={navLink}>Home</NavLink>
             <NavLink to="/courses" className={navLink}>Programs</NavLink>
-            <NavLink to="/methodology" className={navLink}>Methodology</NavLink>
+            <NavLink to="/blogs" className={navLink}>Blogs</NavLink>
             <NavLink to="/about" className={navLink}>About</NavLink>
             <NavLink to="/contact" className={navLink}>Contact</NavLink>
             {user && <NavLink to="/dashboard" className={navLink}>Dashboard</NavLink>}
@@ -123,7 +123,7 @@ const Navbar = () => {
                 {[
                   { to: '/', label: 'Home', end: true },
                   { to: '/courses', label: 'Programs' },
-                  { to: '/methodology', label: 'Methodology' },
+                  { to: '/blogs', label: 'Blogs' },
                   { to: '/about', label: 'About' },
                   { to: '/contact', label: 'Contact' }
                 ].map((item, i) => (
