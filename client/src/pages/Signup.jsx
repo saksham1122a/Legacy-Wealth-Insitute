@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { useAuth } from '../context/AuthContext';
 
 const Signup = () => {
@@ -8,6 +9,12 @@ const Signup = () => {
   const { register } = useAuth();
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [captcha, setCaptcha] = useState('');
+  const recaptchaRef = useRef(null);
+
+  const handleCaptchaChange = (value) => {
+    setCaptcha(value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,13 +22,19 @@ const Signup = () => {
       toast.error('Password must be at least 8 characters');
       return;
     }
+    if (!captcha) {
+      toast.error('Please verify you are not a robot');
+      return;
+    }
     setLoading(true);
     try {
-      await register(form);
+      await register({ ...form, captcha });
       toast.success('Account created!');
       navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Signup failed');
+      recaptchaRef.current?.reset();
+      setCaptcha('');
     } finally {
       setLoading(false);
     }
@@ -81,6 +94,14 @@ const Signup = () => {
               value={form.password}
               onChange={e => setForm({...form, password: e.target.value})}
               placeholder="Minimum 8 characters"
+            />
+          </div>
+
+          <div className="flex justify-center py-2">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              onChange={handleCaptchaChange}
             />
           </div>
 

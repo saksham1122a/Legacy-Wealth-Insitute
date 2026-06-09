@@ -46,7 +46,43 @@ router.post('/register', [
     throw new Error(errors.array().map(e => e.msg).join(', '));
   }
 
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone, captcha } = req.body;
+
+  // Verify reCAPTCHA token if RECAPTCHA_SECRET_KEY is configured
+  const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+  if (recaptchaSecret) {
+    if (!captcha) {
+      res.status(400);
+      throw new Error('Please verify you are not a robot');
+    }
+    try {
+      const verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
+      const verifyResponse = await fetch(verifyUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          secret: recaptchaSecret,
+          response: captcha,
+        }),
+      });
+      const verifyData = await verifyResponse.json();
+      if (!verifyData.success) {
+        res.status(400);
+        throw new Error('reCAPTCHA verification failed. Please try again.');
+      }
+    } catch (err) {
+      console.error('reCAPTCHA verification error:', err);
+      if (err.message && err.message.includes('reCAPTCHA')) {
+        throw err;
+      }
+      res.status(500);
+      throw new Error('Error validating reCAPTCHA token');
+    }
+  } else {
+    console.warn('reCAPTCHA verification skipped: RECAPTCHA_SECRET_KEY is not set in .env');
+  }
 
   const exists = await User.findOne({ email });
   if (exists) {
