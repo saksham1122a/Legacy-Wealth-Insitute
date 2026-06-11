@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
 import api from '../api/axios';
 
 const Blogs = () => {
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedBlog, setSelectedBlog] = useState(null);
 
     useEffect(() => {
         api.get('/blogs')
@@ -16,6 +18,28 @@ const Blogs = () => {
                 setLoading(false);
             });
     }, []);
+
+    // Close on Escape key
+    useEffect(() => {
+        if (!selectedBlog) return;
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') setSelectedBlog(null);
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedBlog]);
+
+    // Prevent background scroll bleed when modal is open
+    useEffect(() => {
+        if (selectedBlog) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [selectedBlog]);
 
     return (
         <div className="bg-cream min-h-screen py-20">
@@ -39,7 +63,11 @@ const Blogs = () => {
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {blogs.map((blog) => (
-                            <div key={blog._id} className="card group overflow-hidden transition-all hover:shadow-2xl">
+                            <div 
+                                key={blog._id} 
+                                onClick={() => setSelectedBlog(blog)}
+                                className="card group overflow-hidden transition-all hover:shadow-2xl cursor-pointer flex flex-col h-full hover:-translate-y-1"
+                            >
                                 <div className="h-64 overflow-hidden relative">
                                     <img 
                                         src={blog.image} 
@@ -50,19 +78,27 @@ const Blogs = () => {
                                         <span className="badge bg-gold text-navy font-medium">Article</span>
                                     </div>
                                 </div>
-                                <div className="p-6">
-                                    <div className="flex items-center gap-2 text-xs text-ink/40 mb-3">
-                                        <span className="text-gold-dark font-medium">{blog.author}</span>
-                                        <span>•</span>
-                                        <span>{new Date(blog.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                <div className="p-6 flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex items-center gap-2 text-xs text-ink/40 mb-3">
+                                            <span className="text-gold-dark font-medium">{blog.author}</span>
+                                            <span>•</span>
+                                            <span>{new Date(blog.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                        </div>
+                                        <h2 className="font-display text-xl text-navy mb-3 group-hover:text-gold-dark transition-colors line-clamp-2">
+                                            {blog.title}
+                                        </h2>
+                                        <p className="text-sm text-ink/60 line-clamp-3 mb-6">
+                                            {blog.description}
+                                        </p>
                                     </div>
-                                    <h2 className="font-display text-xl text-navy mb-3 group-hover:text-gold-dark transition-colors line-clamp-2">
-                                        {blog.title}
-                                    </h2>
-                                    <p className="text-sm text-ink/60 line-clamp-3 mb-6">
-                                        {blog.description}
-                                    </p>
-                                    <button className="text-gold-dark font-medium text-sm hover:underline flex items-center gap-1">
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedBlog(blog);
+                                        }}
+                                        className="text-gold-dark font-medium text-sm hover:underline flex items-center gap-1 mt-auto self-start"
+                                    >
                                         Read More <span>→</span>
                                     </button>
                                 </div>
@@ -71,6 +107,62 @@ const Blogs = () => {
                     </div>
                 )}
             </div>
+
+            {/* Premium Detail Modal Overlay */}
+            {selectedBlog && (
+                <div 
+                    className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-sm animate-overlay-in"
+                    onClick={(e) => { if (e.target === e.currentTarget) setSelectedBlog(null); }}
+                >
+                    <div className="bg-white border border-navy-100 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl relative animate-pop-in">
+                        {/* Header Banner Image */}
+                        <div className="relative h-64 md:h-80 overflow-hidden bg-navy-900">
+                            <img 
+                                src={selectedBlog.image} 
+                                alt={selectedBlog.title} 
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-navy-950/40 to-transparent"></div>
+                            
+                            {/* Close Button */}
+                            <button 
+                                onClick={() => setSelectedBlog(null)}
+                                className="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white rounded-full p-2 transition-all hover:scale-110 active:scale-95 shadow-md z-10"
+                                aria-label="Close modal"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            {/* Title container */}
+                            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                                <span className="badge bg-gold text-navy font-semibold text-xs tracking-wider mb-3 shadow-sm">Article</span>
+                                <h2 className="font-display text-2xl md:text-3.5xl text-cream leading-tight drop-shadow-md">
+                                    {selectedBlog.title}
+                                </h2>
+                            </div>
+                        </div>
+
+                        {/* Content Body */}
+                        <div className="p-6 md:p-8 bg-cream/10">
+                            {/* Metadata */}
+                            <div className="flex items-center gap-3 text-sm text-ink/50 mb-6 pb-4 border-b border-navy-100/30">
+                                <div className="w-8 h-8 rounded-full bg-navy text-gold flex items-center justify-center font-display font-semibold text-sm">
+                                    {selectedBlog.author?.charAt(0).toUpperCase() || 'A'}
+                                </div>
+                                <div>
+                                    <div className="text-navy font-semibold">{selectedBlog.author}</div>
+                                    <div className="text-xs">{new Date(selectedBlog.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                                </div>
+                            </div>
+                            
+                            {/* Full text with line breaks preserved */}
+                            <div className="text-ink/80 text-base md:text-lg leading-relaxed whitespace-pre-line font-serif">
+                                {selectedBlog.description}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

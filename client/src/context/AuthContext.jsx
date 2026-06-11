@@ -12,11 +12,15 @@ export const AuthProvider = ({ children }) => {
     const cached = localStorage.getItem('lw_user');
     if (token && cached) {
       try {
+        // Optimistic load: render immediately from cache, verify silently
         setUser(JSON.parse(cached));
+        setLoading(false);
       } catch (e) {
         localStorage.clear();
+        setLoading(false);
+        return;
       }
-      // Verify with server
+      // Background verify — quietly updates user or clears on auth failure
       api.get('/auth/me')
         .then(({ data }) => {
           setUser(data.user);
@@ -26,8 +30,7 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem('lw_token');
           localStorage.removeItem('lw_user');
           setUser(null);
-        })
-        .finally(() => setLoading(false));
+        });
     } else {
       setLoading(false);
     }

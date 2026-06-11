@@ -4,6 +4,56 @@ import { Users, BookOpen, IndianRupee, BadgeCheck, ArrowRight, Clock, Edit2, Tra
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 
+// Canvas-based image compression utility (Client-side)
+const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.7) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Compress and convert to base64 jpeg
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(dataUrl);
+        } catch (err) {
+          console.error("Canvas compression failed, falling back to original base64", err);
+          resolve(event.target.result);
+        }
+      };
+      img.onerror = () => {
+        resolve(event.target.result);
+      };
+    };
+    reader.onerror = () => {
+      resolve("");
+    };
+  });
+};
+
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -98,18 +148,19 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setBlogForm({ ...blogForm, image: reader.result });
-      };
+      try {
+        const compressedBase64 = await compressImage(file);
+        setBlogForm({ ...blogForm, image: compressedBase64 });
+      } catch (err) {
+        toast.error("Failed to process image. Please try another file.");
+        console.error(err);
+      }
     }
   };
 
-  if (loading) return <div className="min-h-[60vh] flex items-center justify-center text-navy font-display text-xl animate-pulse">Loading Control Centre...</div>;
 
   return (
     <div className="bg-cream min-h-screen pb-20">
@@ -127,10 +178,10 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Stats */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <StatCard icon={<Users/>}       label="Users"              value={stats?.users || 0}             link="/admin/users"/>
-          <StatCard icon={<BookOpen/>}    label="Courses"            value={stats?.courses || 0}           link="/admin/courses"/>
-          <StatCard icon={<Clock/>}       label="Pending Approvals"  value={stats?.pendingEnrollments || 0} link="/admin/enrollments" highlight={stats?.pendingEnrollments > 0}/>
-          <StatCard icon={<IndianRupee/>} label="Revenue Collected"  value={`₹${(stats?.revenue || 0).toLocaleString('en-IN')}`}/>
+          <StatCard loading={loading} icon={<Users/>}       label="Users"              value={stats?.users ?? 0}             link="/admin/users"/>
+          <StatCard loading={loading} icon={<BookOpen/>}    label="Courses"            value={stats?.courses ?? 0}           link="/admin/courses"/>
+          <StatCard loading={loading} icon={<Clock/>}       label="Pending Approvals"  value={stats?.pendingEnrollments ?? 0} link="/admin/enrollments" highlight={!loading && (stats?.pendingEnrollments ?? 0) > 0}/>
+          <StatCard loading={loading} icon={<IndianRupee/>} label="Revenue Collected"  value={`₹${(stats?.revenue || 0).toLocaleString('en-IN')}`}/>
         </div>
 
         {/* Pending approval alert */}
@@ -374,7 +425,7 @@ const AdminDashboard = () => {
   );
 };
 
-const StatCard = ({ icon, label, value, sub, link, highlight }) => {
+const StatCard = ({ icon, label, value, sub, link, highlight, loading }) => {
   const content = (
     <div className={`card p-5 h-full relative transition-all overflow-hidden group ${highlight ? 'border-yellow-300 bg-yellow-50/50' : 'hover:border-gold/50'}`}>
       <div className="flex items-start justify-between relative z-10">
@@ -382,7 +433,11 @@ const StatCard = ({ icon, label, value, sub, link, highlight }) => {
         {link && <ArrowRight className="text-navy/10 group-hover:text-gold-dark transition-colors" size={18}/>}
       </div>
       <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-navy/40 mt-6 relative z-10">{label}</div>
-      <div className={`font-display text-2xl mt-1 relative z-10 ${highlight ? 'text-yellow-800' : 'text-navy'}`}>{value}</div>
+      {loading ? (
+        <div className="h-8 w-20 bg-navy-100 rounded-lg mt-1 animate-pulse" />
+      ) : (
+        <div className={`font-display text-2xl mt-1 relative z-10 ${highlight ? 'text-yellow-800' : 'text-navy'}`}>{value}</div>
+      )}
       {sub && <div className="text-xs text-gold-dark mt-1 font-medium relative z-10">{sub}</div>}
       
       {/* Decorative bg element */}
